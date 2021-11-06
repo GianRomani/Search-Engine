@@ -1,5 +1,4 @@
 from utils import *
-import json
 import ast
 
 class PostingList:
@@ -57,10 +56,9 @@ class DocsTF:
             for id,tfs in self.docs_dict.items():
                 data = []
                 data.append(id) 
-                data.append(tfs)
+                data.append(dict(tfs))
                 writer.writerow(data)
         f.close()
-
 
 class InvertedIndex:
     def __init__(self):
@@ -71,7 +69,6 @@ class InvertedIndex:
         self.docsTF = DocsTF() 
 
     def addPosting(self, posting: PostingList):
-        assert type(posting) == PostingList
         self.list_of_postings.append(posting)
 
     def searchWord(self, word: str) -> PostingList:
@@ -133,14 +130,14 @@ class InvertedIndex:
             next(read_tsv) #just the head
             for i,row in enumerate(read_tsv):
                 try:
-                    doc_id = i
+                    doc_id = i+2
                     title = preprocess(row[0])
                     self.addWords(title, doc_id)
                     description = preprocess(row[1])
                     self.addWords(description, doc_id)
                     location = preprocess(row[2])
                     self.addWords(location, doc_id)
-                    self.doc_len[i] = len(title) + len(description) + len(location) 
+                    self.doc_len[doc_id] = len(title) + len(description) + len(location) 
                     self.docs_number += 1
                     bag_of_words = title+description+location
                     self.docsTF.addDoc(doc_id,bag_of_words)

@@ -2,20 +2,14 @@ from utils import *
 from inverted_index import *
 from cosine import * 
 
-import numpy as np
-from math import sqrt, log
-import linecache
 import heapq 
 import pandas as pd
+import os
 
 def create_index(path:str):
-
-    #path = '/content/drive/MyDrive/Data Mining/HW2/batch_aa.tsv'
     index = InvertedIndex()
     index.buildIndex(path)
-    #print(index.docsTF)
     #index.printIndex(3)
-    print("Index built and written on file with success!")
 
 def search(index: InvertedIndex, path_jobs:str):
     while(True):
@@ -32,20 +26,24 @@ def search(index: InvertedIndex, path_jobs:str):
         else:
             #Return the 5 best announcements
             best = heapq.nlargest(5, res) 
-            #print(best) 
+            #print(best)
             print("Results ({}/{}):".format(len(best), len(res)))
             for i,r in enumerate(best):
                 docId = r[1]  
-                ann = pd.read_csv(path_jobs, sep = "\t", nrows = 1, skiprows = docId)
-                print("{}) {}".format(i+1,ann.columns[4]))
+                ann = pd.read_csv(path_jobs, sep = "\t", nrows = 1, skiprows = docId-1)
+                print("{})docId: {}, link: {}".format(i+1,docId, ann.columns[4]))
 
 
 def main():
-    path = '/home/gianfree/Desktop/Data Mining/HW2/search_engine/'
-    path_jobs = '/home/gianfree/Desktop/Data Mining/HW2/search_engine/jobs.tsv'
-    path_index = '/home/gianfree/Desktop/Data Mining/HW2/search_engine/index.tsv'
-    create_index(path)
+    try:
+        path = os.getcwd() +"/docs/"
+        path_jobs = path + "jobs.tsv"#"jobs.tsv"
+    except Exception as e:
+        print("Write the path to the folder containing the files:")
+        path = input()
+        path_jobs = path + "/jobs.tsv"
 
+    create_index(path)
     #To search I need to open again the inverted index
     index = InvertedIndex()
     index.openIndex(path)

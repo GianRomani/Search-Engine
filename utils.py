@@ -63,7 +63,7 @@ def stemming(text: string):
     stem_text = [italian_stemmer.stem(word) for word in text if not word.isdigit()]
     return stem_text
 
-def preprocess(text: string, html=1, accent=1, punct=1, numb=1, stop=1, lemma=1, stem=1):
+def preprocess(text: string, html=1, accent=0, punct=1, numb=1, stop=1, lemma=0, stem=1):
     if html==1:
         text = remove_html(text)
     if accent==1:
